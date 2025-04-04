@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const { authenticateToken } = require('../middleware/auth');
 const Summary = require('../models/Summary');
+const checkSubscriptionLimit = require('../middleware/checkSubscriptionLimit');
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ const upload = multer({ storage });
 router.use('/summary', express.static(path.join(__dirname, '../summary')));
 
 // 1. Upload PDF and create initial record
-router.post('/upload', authenticateToken, upload.single('pdf'), async (req, res) => {
+router.post('/upload', authenticateToken, checkSubscriptionLimit,upload.single('pdf'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, error: 'No file uploaded' });
   }
@@ -54,7 +55,7 @@ router.post('/upload', authenticateToken, upload.single('pdf'), async (req, res)
   }
 });
 
-router.post('/upload-raw', authenticateToken, async (req, res) => {
+router.post('/upload-raw', authenticateToken, checkSubscriptionLimit,async (req, res) => {
   if (!req.user) {
     return res.status(401).json({ message: 'User not authenticated' });
   }

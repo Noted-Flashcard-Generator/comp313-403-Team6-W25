@@ -3,6 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { authenticateToken } = require('../middleware/auth');
+const checkSubscriptionLimit = require('../middleware/checkSubscriptionLimit');
 const { Flashcard, FlashcardDeck } = require('../models/FlashcardSchemas');
 
 const router = express.Router();
@@ -17,7 +18,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Route to create a flashcard deck
-router.post('/flashcard-deck', authenticateToken, async (req, res) => {
+router.post('/flashcard-deck', authenticateToken, checkSubscriptionLimit, async (req, res) => {
 
   // console.log('Creating flashcard deck');
   if (!req.user) {
@@ -51,7 +52,7 @@ router.post('/flashcard-deck', authenticateToken, async (req, res) => {
 });
 
 // Route to create a flashcard
-router.post('/flashcard', async (req, res) => {
+router.post('/flashcard',authenticateToken,checkSubscriptionLimit,async (req, res) => {
   const { question, answer, deckId } = req.body;
 
   if (!question || !answer || !deckId) {
