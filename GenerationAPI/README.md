@@ -1,4 +1,4 @@
-.v# Installation Instructions
+# Installation Instructions
 
 ### Navigate to /GenerationAPI
 ```sh
