@@ -175,7 +175,7 @@ export const updateSummary = async (summaryId, summary) => {
 
     console.log("🔍 Updating summary in MongoDB", { summaryId, summary });
 
-    const response = await axios.post(`${API_URL}/summary/update-summary`, 
+    const response = await axios.patch(`${API_URL}/summary/update-summary`, 
       { summaryId, summary }, // ✅ Ensure summary is sent correctly
       {
         headers: {

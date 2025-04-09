@@ -97,7 +97,7 @@ router.get('/get-pdfs', async (req, res) => {
   });
 
 // 2. NEW: Update summary after Flask API processing
-router.post('/update-summary', authenticateToken, async (req, res) => {
+router.patch('/update-summary', authenticateToken, async (req, res) => {
   if (!req.user) {
     return res.status(401).json({ message: 'User not authenticated' });
   }
