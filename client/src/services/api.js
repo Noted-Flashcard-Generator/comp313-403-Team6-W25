@@ -65,6 +65,15 @@ export const uploadPdf = async (file) => {
       summaryId: response.data.summaryId,
     };
   } catch (error) {
+    if (error.response?.data?.error === 'FREE_TIER_LIMIT') {
+      return { 
+        success: false, 
+        error: 'FREE_TIER_LIMIT',
+        message: error.response.data.message,
+        currentCount: error.response.data.currentCount,
+        maxAllowed: error.response.data.maxAllowed
+      };
+    }
     return { success: false, error: error.message };
   }
 };
@@ -94,6 +103,15 @@ export const uploadRawTextSummary = async (title, text, summaryText) => {
       summaryId: response.data.summaryId,
     };
   } catch (error) {
+    if (error.response?.data?.error === 'FREE_TIER_LIMIT') {
+      return { 
+        success: false, 
+        error: 'FREE_TIER_LIMIT',
+        message: error.response.data.message,
+        currentCount: error.response.data.currentCount,
+        maxAllowed: error.response.data.maxAllowed
+      };
+    }
     return { success: false, error: error.message };
   }
 };
@@ -252,6 +270,15 @@ export const uploadFlashcardDeck = async (deckName, extractedText, qaPairs) => {
     };
 
   } catch (error) {
+    if (error.response?.data?.error === 'FREE_TIER_LIMIT') {
+      return { 
+        success: false, 
+        error: 'FREE_TIER_LIMIT',
+        message: error.response.data.message,
+        currentCount: error.response.data.currentCount,
+        maxAllowed: error.response.data.maxAllowed
+      };
+    }
     return { success: false, error: error.message };
   }
 };
@@ -270,6 +297,166 @@ export const deleteFlashcardDeck = async (deckId) => {
     return { success: false, error: error.message };
   }
 };
-
-
-
+export const getUserUsageStats = async () => {
+  try {
+    const response = await api.get('/auth/usage');
+    return {
+      success: true,
+      summaryCount: response.data.summaryCount,
+      flashcardCount: response.data.flashcardCount,
+      isPaidUser: response.data.isPaidUser,
+      freeLimit: response.data.freeLimit || 3
+    };
+  } catch (error) {
+    return { 
+      success: false, 
+      error: error.message 
+    };
+  }
+};
+export const subscriptionApi = {
+  
+  // Subscribe to paid plan
+  subscribe: async (paymentDetails) => {
+    try {
+      const token = localStorage.getItem('token'); // Get JWT token from local storage
+      if (!token) {
+        return { success: false, error: 'User not authenticated' };
+      }
+      const safePaymentDetails = {
+        lastFourDigits: paymentDetails.cardNumber.slice(-4),
+        expiryDate: paymentDetails.expiryDate,
+        cardType: getCardType(paymentDetails.cardNumber)
+      };
+      
+      // Send subscription request to backend
+      const response = await axios.post(
+        `${API_URL}/auth/subscription`, 
+        {
+          isPaidUser: true,
+          subscriptionStatus: 'active',
+          subscription: 'premium',
+          subscriptionEnd: new Date(Date.now() + 30*24*60*60*1000).toISOString(),//
+          paymentMethod: safePaymentDetails
+        },
+        {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      return { success: true, message: 'Subscription successful', data: response.data };
+    } catch (error) {
+      console.error('Subscription API error:', error);
+      return { 
+        success: false, 
+        message: error.response?.data?.message || 'Subscription failed. Please try again.' 
+      };
+    }
+  },
+  // Update payment method
+  updatePaymentMethod: async (paymentDetails) => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        return { success: false, message: 'User not authenticated' };
+      }
+      
+      // Similar secure handling as subscribe method
+      const safePaymentDetails = {
+        lastFourDigits: paymentDetails.cardNumber.slice(-4),
+        expiryDate: paymentDetails.expiryDate,
+        cardType: getCardType(paymentDetails.cardNumber)
+      };
+      
+      // Send payment update request
+      const response = await axios.post(
+        `${API_URL}/auth/subscription`,
+        { paymentMethod: safePaymentDetails },
+        {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      return response.data;
+    } catch (error) {
+      return { 
+        success: false, 
+        message: error.response?.data?.message || 'Failed to update payment method.' 
+      };
+    }
+  },
+   // Cancel subscription
+   cancelSubscription: async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        return { success: false, message: 'User not authenticated' };
+      }
+      
+      // Send cancellation request
+      const response = await axios.post(
+        `${API_URL}/auth/subscription/cancel`,
+        {},
+        {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      
+      return response.data;
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to cancel subscription.'
+      };
+    }
+  },
+  
+  // Get subscription status
+  getSubscriptionStatus: async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        return { success: false, message: 'User not authenticated' };
+      }
+      
+      // Get current subscription status
+      const response = await axios.get(
+        `${API_URL}/auth/subscription`,
+        {
+          headers: { 
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to fetch subscription status.'
+      };
+    }
+  }
+};
+// Helper function to determine card type
+function getCardType(cardNumber) {
+  const number = cardNumber.replace(/\s/g, '');
+  
+  if (/^4/.test(number)) return 'Visa';
+  if (/^5[1-5]/.test(number)) return 'Mastercard';
+  if (/^3[47]/.test(number)) return 'American Express';
+  if (/^6(?:011|5)/.test(number)) return 'Discover';
+  
+  return 'Card';
+}

@@ -2,13 +2,16 @@
 //dashboard route. The page includes a form for changing the password and a button to delete the account.
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import SubscriptionModal from './components/SubscriptionModal';
+import PaymentInfoModal from './components/PaymentInfoModal';
+import CancelSubscriptionModal from './components/CancelSubscriptionModal';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { FiUser, FiMail, FiLock, FiTrash2 } from 'react-icons/fi';
-import { useRouter } from 'next/navigation';
+import { FiUser, FiMail, FiLock, FiTrash2, FiCreditCard } from 'react-icons/fi';
 import { authApi } from '@/services/api';
 
 export default function AccountPage() {
@@ -19,6 +22,9 @@ export default function AccountPage() {
   const [success, setSuccess] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showPaymentInfoModal, setShowPaymentInfoModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [formData, setFormData] = useState({
     email: user?.email || '',
     currentPassword: '',
@@ -66,6 +72,17 @@ export default function AccountPage() {
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete account');
     }
+  };
+  const handleSubscribe = () => {
+    setShowSubscriptionModal(true);
+  };
+
+  const handleUpdatePayment = () => {
+    setShowPaymentInfoModal(true);
+  };
+
+  const handleCancelSubscription = () => {
+    setShowCancelModal(true);
   };
 
   return (
@@ -123,7 +140,63 @@ export default function AccountPage() {
               </div>
             </div>
           </div>
-
+ {/* Subscription Management Section */}
+ <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+              Subscription Management
+            </h2>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    Current Plan
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {user?.isPaidUser ? 'Premium Plan ($9.99/month)' : 'Free Plan'}
+                  </p>
+                  {user?.isPaidUser && (
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                      Next billing date: {new Date(user?.subscriptionEnd || Date.now() + 30*24*60*60*1000).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+                {!user?.isPaidUser ? (
+                  <Button 
+                    onClick={handleSubscribe}
+                    className="bg-rose-500 hover:bg-rose-600 text-white"
+                  >
+                    Upgrade to Premium
+                  </Button>
+                ) : (
+                  <div className="space-x-2">
+                    <Button 
+                      onClick={handleUpdatePayment}
+                      variant="secondary"
+                    >
+                      <FiCreditCard className="mr-2" />
+                      Update Payment
+                    </Button>
+                    <Button 
+                      onClick={handleCancelSubscription}
+                      className="bg-black hover:bg-gray-300 text-white-800"
+                    >
+                      Cancel Subscription
+                    </Button>
+                  </div>
+                )}
+              </div>
+              
+              {!user?.isPaidUser && (
+                <div className="mt-4 border-t pt-4">
+                  <h3 className="text-sm font-semibold mb-2">Premium Benefits:</h3>
+                  <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1 list-disc pl-5">
+                    <li>Unlimited summaries and flashcard decks</li>
+                   
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
           {/* Security Section */}
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
@@ -187,6 +260,19 @@ export default function AccountPage() {
           </div>
         </div>
       </div>
+      <SubscriptionModal
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+        />
+        <PaymentInfoModal
+        isOpen={showPaymentInfoModal}
+        onClose={() => setShowPaymentInfoModal(false)}
+        />
+        <CancelSubscriptionModal
+        isOpen={showCancelModal} 
+        onClose={() => setShowCancelModal(false)}
+        />
+    
     </ProtectedRoute>
   );
 }
