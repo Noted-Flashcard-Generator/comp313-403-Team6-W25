@@ -8,6 +8,9 @@ import { fetchSummaries, deleteSummary } from '@/services/api';
 import { FiUpload, FiFileText, FiTrash } from 'react-icons/fi'; // Import the trash icon
 import FileUploadModal from './components/FileUploadModal';
 import TextInputModal from './components/TextInputModal';
+import InlineSummaryEditor from './components/InlineSummaryEditor';
+import 'react-quill/dist/quill.snow.css';
+
 
 export default function Summaries() {
   const router = useRouter();
@@ -256,27 +259,30 @@ export default function Summaries() {
 
         {/* Summary View Modal */}
         <Modal isOpen={showSummaryModal} onClose={() => setShowSummaryModal(false)}>
-          {selectedSummary && (
-            <div className="space-y-4">
-              <div className="flex justify-between items-start">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  {selectedSummary.originalFileName}
-                </h3>
-              </div>
-              
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Created: {formatDate(selectedSummary.createdAt)}
-              </div>
+  {selectedSummary && (
+    <div className="space-y-4">
+      <div className="flex justify-between items-start">
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+          {selectedSummary.originalFileName}
+        </h3>
+      </div>
+      
+      <div className="text-sm text-gray-500 dark:text-gray-400">
+        Created: {formatDate(selectedSummary.createdAt)}
+      </div>
+      
+      <InlineSummaryEditor
+        initialContent={selectedSummary.summary || 'No summary available.'}
+        summaryId={selectedSummary._id}
+        onUpdate={(updatedContent) => {
+          setSelectedSummary({ ...selectedSummary, summary: updatedContent });
+        }}
+      />
+    </div>
+  )}
+</Modal>
 
-              <div className="border rounded p-4 bg-gray-50 dark:bg-gray-700">
-                <h4 className="font-medium mb-2 text-gray-900 dark:text-white">Summary:</h4>
-                <p className="whitespace-pre-line text-gray-700 dark:text-gray-300">
-                  {selectedSummary.summary || 'No summary content available.'}
-                </p>
-              </div>
-            </div>
-          )}
-        </Modal>
+        
       </div>
     </ProtectedRoute>
   );

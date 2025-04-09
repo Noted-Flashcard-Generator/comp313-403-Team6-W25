@@ -50,9 +50,7 @@ export default function UsageBanner() {
   const summaryPercentage = Math.min((usageStats.summaryCount / summaryLimit) * 100, 100);
   const flashcardPercentage = Math.min((usageStats.flashcardCount / flashcardLimit) * 100, 100);
   
-  // Don't show if user hasn't created anything yet
-  if (usageStats.summaryCount === 0 && usageStats.flashcardCount === 0) return null;
-  
+
  // const anyLimitReached = usageStats.summaryCount >= freeLimit || usageStats.flashcardCount >= freeLimit;
   
  return (
