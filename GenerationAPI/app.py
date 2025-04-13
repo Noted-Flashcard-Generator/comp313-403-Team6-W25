@@ -4,6 +4,7 @@ from summarizer import TextSummarizer
 from questionGenerator import QuestionGenerator
 import fitz
 import io
+import os
 from pdfProcessing import extract_text_from_pdf, parse_page_range
 from dotenv import load_dotenv
 
@@ -107,4 +108,5 @@ def generate_qa():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3003, debug=True)
+    port = int(os.environ.get("PORT", 3003))  # Use Render's PORT or default to 3003
+    app.run(host="0.0.0.0", port=port, debug=True)
