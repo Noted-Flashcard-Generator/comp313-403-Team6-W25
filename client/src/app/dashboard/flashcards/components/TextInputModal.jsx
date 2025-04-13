@@ -10,10 +10,10 @@ import { uploadFlashcardDeck, getUserUsageStats } from '@/services/api';
 
 // Flask API route to generate QA pairs from raw text
 const FLASK_API_URL_DEFAULT = 'http://127.0.0.1:3003'; // Base URL for local development
-const FLASK_API_URL_BASE = process.env.FLASK_API_URL || FLASK_API_URL_DEFAULT;
+const FLASK_API_URL_BASE = process.env.NEXT_PUBLIC_FLASK_API_URL || FLASK_API_URL_DEFAULT;
 const GENERATE_QA_RAW_ENDPOINT = '/generate-qa-raw';
 
-// Construc the full flask URL
+// Construct the full flask URL
 const FLASK_API_URL = FLASK_API_URL_BASE + GENERATE_QA_RAW_ENDPOINT;
 console.log('Flask:', FLASK_API_URL);
 

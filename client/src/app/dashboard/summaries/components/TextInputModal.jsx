@@ -6,7 +6,14 @@ import { Button } from '@/components/ui/Button';
 import axios from 'axios';
 import { uploadRawTextSummary, getUserUsageStats } from '@/services/api';
 import { useRouter } from 'next/navigation';
-const FLASK_API_URL = 'http://127.0.0.1:3003/summarizeraw';
+
+const FLASK_API_URL_DEFAULT = 'http://127.0.0.1:3003'; // Base URL for local development
+const FLASK_API_URL_BASE = process.env.NEXT_PUBLIC_FLASK_API_URL || FLASK_API_URL_DEFAULT;
+const SUMMARIZE_RAW_ENDPOINT = '/summarizeraw';
+
+const FLASK_API_URL = FLASK_API_URL_BASE + SUMMARIZE_RAW_ENDPOINT;
+console.log('Flask:', FLASK_API_URL);
+
 export default function TextInputModal({ isOpen, onClose }) {
   const router = useRouter();
   const [text, setText] = useState('');

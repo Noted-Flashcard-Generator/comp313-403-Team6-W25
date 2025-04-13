@@ -7,6 +7,13 @@ import { Modal } from '@/components/ui/Modal';
 import { updateSummary, uploadPdf } from '@/services/api';
 import axios from 'axios';
 
+const FLASK_API_URL_DEFAULT = 'http://127.0.0.1:3003'; // Base URL for local development
+const FLASK_API_URL_BASE = process.env.NEXT_PUBLIC_FLASK_API_URL || FLASK_API_URL_DEFAULT;
+const SUMMARIZE_ENDPOINT = '/summarize';
+
+const FLASK_API_URL = FLASK_API_URL_BASE + SUMMARIZE_ENDPOINT;
+console.log('Flask:', FLASK_API_URL);
+
 export default function FileUploadModal({ isOpen, onClose }) {
   const [file, setFile] = useState(null);
   const [fileUrl, setFileUrl] = useState('');
@@ -21,7 +28,6 @@ export default function FileUploadModal({ isOpen, onClose }) {
   // File size constraints
   const MIN_FILE_SIZE = 0.01;
   const MAX_FILE_SIZE = 100;
-  const FLASK_API_URL = 'http://127.0.0.1:3003/summarize';
 
   const handleFileChange = useCallback(async (e) => {
     const selectedFile = e.target.files?.[0];

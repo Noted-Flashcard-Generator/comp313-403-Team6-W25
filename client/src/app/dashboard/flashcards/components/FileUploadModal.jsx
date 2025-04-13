@@ -26,7 +26,12 @@ export default function FileUploadModal({ isOpen, onClose }) {
   // File size constraints
   const MIN_FILE_SIZE = 0.01;
   const MAX_FILE_SIZE = 100;
-  const FLASK_API_URL = 'http://127.0.0.1:3003/generate-qa';
+
+  const FLASK_API_URL_DEFAULT = 'http://127.0.0.1:3003'; // Base URL for local development
+  const FLASK_API_URL_BASE = process.env.NEXT_PUBLIC_FLASK_API_URL || FLASK_API_URL_DEFAULT;
+  const GENERATE_QA_ENDPOINT = '/generate-qa';
+  const FLASK_API_URL = FLASK_API_URL_BASE + GENERATE_QA_ENDPOINT;
+  console.log('Flask:', FLASK_API_URL);
 
   useEffect(() => {
     if (isOpen) {
