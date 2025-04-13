@@ -70,7 +70,7 @@ app.use('*', (req, res) => {
 
 const PORT = process.env.PORT || 5600;
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {  // Explicitly bind to all network interfaces
   console.log(`Server running on port ${PORT}`);
 });
 

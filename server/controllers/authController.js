@@ -1,4 +1,4 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { FlashcardDeck } = require('../models/FlashcardSchemas');
@@ -6,6 +6,8 @@ const Summary = require('../models/Summary');
 const { validatePassword } = require('../utils/passwordValidation');
 
 const register = async (req, res) => {
+  // console.log('--- Register Request Received ---');
+  // console.log('Request Body:', req.body);
   try {
     const { email, password } = req.body;
     
