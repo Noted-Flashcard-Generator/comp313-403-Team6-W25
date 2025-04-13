@@ -12,5 +12,4 @@ const FlashCardCard = () => {
     </div>
   )
 }
-
 export default FlashCardCard
