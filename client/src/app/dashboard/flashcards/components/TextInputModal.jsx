@@ -15,6 +15,7 @@ const GENERATE_QA_RAW_ENDPOINT = '/generate-qa-raw';
 
 // Construc the full flask URL
 const FLASK_API_URL = FLASK_API_URL_BASE + GENERATE_QA_RAW_ENDPOINT;
+console.log('Flask:', FLASK_API_URL);
 
 export default function TextInputModal({ isOpen, onClose }) {
   const router = useRouter();

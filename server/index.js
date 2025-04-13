@@ -19,10 +19,13 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
+const frontendURL = process.env.FRONTEND_URL || 'http://localhost:3000'; // Default to localhost for development
+
 app.use(cors({
-  origin: 'http://localhost:3000', // 
-  credentials: true, // 
+  origin: frontendURL,
+  credentials: true,
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

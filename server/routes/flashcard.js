@@ -20,7 +20,7 @@ const upload = multer({ storage });
 // Route to create a flashcard deck
 router.post('/flashcard-deck', authenticateToken, checkSubscriptionLimit, async (req, res) => {
 
-  // console.log('Creating flashcard deck');
+  console.log('Creating flashcard deck');
   if (!req.user) {
     return res.status(401).json({ message: 'User not authenticated' });
   }
